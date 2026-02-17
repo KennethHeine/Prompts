@@ -1,0 +1,103 @@
+ROLE: You are a coding agent onboarding this repository for GitHub Copilot coding agent + Copilot Chat.
+
+MISSION:
+Create and commit the following files (or improve them if they already exist):
+1) /AGENTS.md
+2) /.github/copilot-instructions.md
+3) /.github/workflows/copilot-setup-steps.yml
+
+REFERENCE MATERIAL (READ FIRST — SOURCE OF TRUTH):
+Use these pages for required filenames, formats, and behavior:
+- GitHub Docs: Add repository instructions (copilot-instructions.md + AGENTS.md usage)
+  https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions
+- GitHub Docs: Customize the agent environment (copilot-setup-steps.yml requirements)
+  https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/customize-the-agent-environment
+- GitHub Docs: Best results / best practices for Copilot coding agent tasks (good task patterns, validation mindset)
+  https://docs.github.com/en/copilot/tutorials/coding-agent/get-the-best-results
+  https://docs.github.com/en/copilot/get-started/best-practices
+- AGENTS.md spec + examples:
+  https://agents.md/
+  https://github.com/agentsmd/agents.md
+- GitHub Blog: How to write a great agents.md (structure + practical tips)
+  https://github.blog/ai-and-ml/github-copilot/how-to-write-a-great-agents-md-lessons-from-over-2500-repositories/
+
+DISCOVERY (DO THIS BEFORE WRITING FILES):
+Inspect THIS repository to learn real commands and conventions:
+- README, CONTRIBUTING, docs/, ADRs
+- Existing CI workflows in .github/workflows (treat as the source of truth for build/test/lint)
+- Build/tooling/version files: .tool-versions, .nvmrc, global.json, go.mod, pyproject.toml, package.json, etc.
+- Lint/format configs: eslint/prettier, ruff/black, golangci-lint, dotnet format, etc.
+- Test frameworks and how tests run in CI
+- Required env vars, local services/containers, DB migrations, .env.example, secrets patterns
+
+DELIVERABLES (WHAT TO CREATE):
+
+1) /AGENTS.md
+Purpose: A single “README for agents” with the minimum context needed to succeed fast.
+
+Must include sections (keep concise + bullet-heavy):
+A) Project snapshot
+- Tech stack, major components/services, key directories (10–20 bullets max)
+
+B) Golden commands (MOST IMPORTANT)
+- Install deps
+- Run/dev
+- Build
+- Test: fast vs full suite (if applicable)
+- Lint/format/typecheck
+Use commands that match CI workflows. If uncertain, add a TODO and point to where to confirm (e.g., specific workflow file).
+
+C) Project map
+- What each top-level folder is for + any “do not touch” areas
+
+D) Guardrails & safety
+- Never commit secrets
+- How to use .env.example / secret management approach used here
+- Avoid destructive commands unless explicitly requested
+
+E) Definition of Done (MANDATORY)
+When the agent finishes any code change, it must ensure:
+- Tests: Add or update tests for new/changed behavior (or explicitly justify why no tests are needed).
+- Docs: Update relevant documentation (README/docs/usage notes) when behavior, configuration, or developer workflow changes.
+- Validation: Run the relevant checks locally (or via documented commands) before opening a PR.
+- PR hygiene: small diffs, clear summary, mention commands run + results.
+
+2) /.github/copilot-instructions.md
+Purpose: Repo-wide Copilot guidance read on every request.
+
+Include:
+- “How this repo is structured” (very short)
+- Key coding conventions and architectural rules that matter here
+- Validation checklist (exact commands to run before PR)
+- Testing expectations (when to add tests; fast vs full suite)
+- Docs expectations (when to update docs; what docs are authoritative here)
+- A note: “AGENTS.md is the primary operating manual for agents in this repo.”
+
+Keep it short and high-signal. Avoid generic boilerplate.
+
+3) /.github/workflows/copilot-setup-steps.yml
+Purpose: Prepare the Copilot coding agent environment before it starts working.
+
+Hard requirements (from GitHub Docs):
+- Path must be exactly: .github/workflows/copilot-setup-steps.yml
+- Must contain a single job named EXACTLY: copilot-setup-steps
+- Keep permissions minimal (typically contents: read if using checkout)
+
+Workflow behavior requirements:
+- Checkout repo (if needed)
+- Install required runtimes/toolchains based on repo reality (match CI version pins if available)
+- Install dependencies
+- Add caching where appropriate for the stack
+- Prefer a minimal validation step that enables the agent to run tests/linters (keep it reliable; avoid flaky integration steps unless necessary)
+- Include workflow_dispatch
+- Include push and pull_request triggers limited to changes of this workflow file (paths filter) so it’s easy to validate
+
+QUALITY BAR / ACCEPTANCE CRITERIA:
+- Every documented command must be consistent with repo files and CI workflows.
+- If something is unknown, add a TODO + a concrete pointer to confirm (file path, script name, workflow name).
+- Do not add any extra instruction systems beyond the three deliverables.
+- Commit in 1–2 commits with clear messages (e.g., “chore: add Copilot agent onboarding files”).
+
+OUTPUT:
+Provide a PR (preferred) or a patch/commit that adds/updates these files, plus a short summary of what changed and why.
+Include which validation commands were run and their results (or explain why they weren’t run).
